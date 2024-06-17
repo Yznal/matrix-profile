@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.5'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'org.jetbrains.kotlin.jvm' version '2.0.0'
 }
 
 group = 'org.yznal'
@@ -11,6 +12,10 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 javafx {
@@ -31,6 +36,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'io.github.ensozos:matrix-profile:0.0.3'
+    implementation 'commons-collections:commons-collections:3.2.2'
+    implementation 'com.google.guava:guava:33.2.1-jre'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
