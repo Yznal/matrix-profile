@@ -1,37 +1,45 @@
 package org.yznal.matrixprofile.service;
 
-import org.yznal.matrixprofile.repository.MetricRepository;
-import org.yznal.matrixprofile.vo.MetricValue;
+import org.yznal.matrixprofile.configuration.MatrixProfileProperties;
+import org.yznal.matrixprofile.utils.TimeSeriesWithMatrixProfile;
+import org.yznal.matrixprofile.vo.Metric;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
- *
+ * Отслеживает метрики и нотифицирует об аномалиях
  */
 public class MetricsService {
-    private final Map<String, MetricRepository<MetricValue>> registeredMetrics;
+    private final Map<String, TimeSeriesWithMatrixProfile<Metric>> registeredMetrics;
+    private final Map<String, Metric> lastDiscord;
+    private final AnomalyReactor anomalyReactor;
 
     public MetricsService(Collection<String> metricIds,
-                          Supplier<MetricRepository<MetricValue>> metricRepositorySupplier) {
-        registeredMetrics = new HashMap<>(metricIds.size());
+                          MatrixProfileProperties properties,
+                          AnomalyReactor anomalyReactor) {
+        this.registeredMetrics = new HashMap<>(metricIds.size());
+        this.lastDiscord = new HashMap<>(metricIds.size());
         for (var metricId : metricIds) {
-            registeredMetrics.put(metricId, metricRepositorySupplier.get());
+            this.registeredMetrics.put(metricId,
+                    new TimeSeriesWithMatrixProfile<>(
+                            properties.getEgressMetricsLength(),
+                            properties.getWindowSize()));
+            this.lastDiscord.put(metricId, null);
         }
+        this.anomalyReactor = anomalyReactor;
     }
 
-    public double[] getMetrics(String metricId) {
-        final var repository = registeredMetrics.get(metricId);
-        final var metrics = new double[repository.size()];
+    public void registerNewMetric(Metric metric) {
+        final var metricId = metric.id();
+        final var tsmp = registeredMetrics.get(metricId);
+        tsmp.addMetric(metric);
 
-        var scanIterator = repository.scan().iterator();
-        var i = 0;
-        while (scanIterator.hasNext()) {
-            metrics[i] = scanIterator.next().value();
+        final var discord = tsmp.getDiscord();
+        if (discord != lastDiscord.get(metricId)) {
+            lastDiscord.put(metricId, discord);
+            anomalyReactor.onDiscord(discord);
         }
-
-        return metrics;
     }
 }

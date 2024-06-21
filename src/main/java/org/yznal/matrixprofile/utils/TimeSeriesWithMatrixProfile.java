@@ -1,8 +1,10 @@
 package org.yznal.matrixprofile.utils;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.yznal.matrixprofile.vo.MetricValue;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -16,7 +18,6 @@ import java.util.LinkedList;
  */
 @Getter
 public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
-
     /**
      * Длина временного ряда
      */
@@ -32,6 +33,7 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
     /**
      * Расчетные значения матричного профиля временного ряда {@link TimeSeriesWithMatrixProfile#timeSeries}
      */
+    @Getter(AccessLevel.PROTECTED)
     private final double[] matrixProfile;
     /**
      * Текущее количество заполненных значений временного ряда.
@@ -139,7 +141,7 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
         return Math.sqrt(distance);
     }
 
-    public T[] getTimeSeries() {
+    protected T[] getTimeSeries() {
         var result = Arrays.copyOf(timeSeries, seriesLength);
         for (var i = 0; i < seriesLength; i++) {
             var index = startIndex + i;
@@ -151,13 +153,15 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
         return result;
     }
 
-    public double[] getMatrixProfile() {
-        return matrixProfile;
-    }
-
-    public boolean isFull() {
+    protected boolean isFull() {
         return seriesLength == capacity;
     }
 
-
+    @Nullable
+    public T getDiscord() {
+        final var lastDiscord = discords.peekLast();
+        return lastDiscord != null
+                ? lastDiscord.metric
+                : null;
+    }
 }
