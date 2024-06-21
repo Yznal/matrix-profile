@@ -3,8 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
-    id 'org.jetbrains.kotlin.jvm' version '2.0.0'
+    id 'maven-publish'
 }
 
 group = 'org.yznal'
@@ -12,15 +11,6 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
-}
-
-kotlin {
-    jvmToolchain(21)
-}
-
-javafx {
-    version = "22.0.1"
-    modules = ['javafx.controls']
 }
 
 configurations {
@@ -35,8 +25,6 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'io.github.ensozos:matrix-profile:0.0.3'
-    implementation 'commons-collections:commons-collections:3.2.2'
     implementation 'com.google.guava:guava:33.2.1-jre'
 
     compileOnly 'org.projectlombok:lombok'
@@ -49,4 +37,12 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
 }
