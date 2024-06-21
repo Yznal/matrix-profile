@@ -53,9 +53,13 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
     /**
      * Данные об аномалии
      *
-     * @param <T> тип метрики
+     * @param <T>    тип метрики
+     * @param index  индекс аномалии в матричном профиле
+     * @param value  значение матричного профиля
+     * @param metric метрика, соответствующая аномалии
      */
     public record DiscordInfo<T>(int index, double value, T metric) {
+        // empty record
     }
 
     @SuppressWarnings("unchecked")
@@ -70,6 +74,11 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
         this.discords = new LinkedList<>();
     }
 
+    /**
+     * Добавляет новую метрику и пересчитывает матричный профиль при необходимости
+     *
+     * @param newMetric новая метрика к добавлению
+     */
     public void addMetric(T newMetric) {
         // Добавляем новую метрику в конец буфера
         var index = startIndex + seriesLength;
@@ -141,6 +150,9 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
         return Math.sqrt(distance);
     }
 
+    /**
+     * @return snapshot значений временного ряда метрик
+     */
     protected T[] getTimeSeries() {
         var result = Arrays.copyOf(timeSeries, seriesLength);
         for (var i = 0; i < seriesLength; i++) {
@@ -153,10 +165,22 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
         return result;
     }
 
+    /**
+     * Возвращает признак заполненности буфера.
+     *
+     * @return {@code true},
+     * если {@link TimeSeriesWithMatrixProfile#seriesLength} == {@link TimeSeriesWithMatrixProfile#capacity};
+     * иначе {@code false}
+     */
     protected boolean isFull() {
         return seriesLength == capacity;
     }
 
+    /**
+     * Возвращает последняя обнаруженная аномалия, если такая есть.
+     *
+     * @return последняя обнаруженная аномалия, если такая есть
+     */
     @Nullable
     public T getDiscord() {
         final var lastDiscord = discords.peekLast();

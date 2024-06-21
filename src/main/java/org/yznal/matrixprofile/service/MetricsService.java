@@ -4,7 +4,6 @@ import org.yznal.matrixprofile.configuration.MatrixProfileProperties;
 import org.yznal.matrixprofile.utils.TimeSeriesWithMatrixProfile;
 import org.yznal.matrixprofile.vo.Metric;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,16 +15,19 @@ public class MetricsService {
     private final Map<String, Metric> lastDiscord;
     private final AnomalyReactor anomalyReactor;
 
-    public MetricsService(Collection<String> metricIds,
-                          MatrixProfileProperties properties,
+    public MetricsService(MatrixProfileProperties matrixProfileProperties,
                           AnomalyReactor anomalyReactor) {
+        final var metricIds = matrixProfileProperties.getMetricIds();
+        final var timeSeriesLength = matrixProfileProperties.getTimeSeriesLength();
+        final var windowSize = matrixProfileProperties.getWindowSize();
+
         this.registeredMetrics = new HashMap<>(metricIds.size());
         this.lastDiscord = new HashMap<>(metricIds.size());
         for (var metricId : metricIds) {
             this.registeredMetrics.put(metricId,
                     new TimeSeriesWithMatrixProfile<>(
-                            properties.getEgressMetricsLength(),
-                            properties.getWindowSize()));
+                            timeSeriesLength,
+                            windowSize));
             this.lastDiscord.put(metricId, null);
         }
         this.anomalyReactor = anomalyReactor;
