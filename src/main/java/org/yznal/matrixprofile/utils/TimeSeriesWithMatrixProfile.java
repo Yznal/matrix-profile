@@ -85,37 +85,43 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
             seriesLength++; //Иначе увеличим текущее число хранимых метрик
         }
 
-        if (seriesLength >= windowSize) { // Если мы уже храним достаточное количество метрик для анализа,
+        if (seriesLength > windowSize) { // Если мы уже храним достаточное количество метрик для анализа,
             updateMatrixProfile(index); // начнем плавно высчитывать матричный профиль
         }
     }
 
     private void updateMatrixProfile(int newMetricIndex) {
-        var start = (newMetricIndex - windowSize + 1 + capacity) % capacity;
-
         var discordCandidate = discords.isEmpty() ? null : discords.peekLast();
-        for (var i = start; i <= newMetricIndex; i++) {
-            for (var j = 0; j <= seriesLength - windowSize; j++) {
-                if (i != j) {
-                    var distance = calculateDistance(i, j);
-                    var profileIndex = (i - startIndex + capacity) % capacity - windowSize + 1;
-                    matrixProfile[profileIndex] = distance;
 
-                    if (discordCandidate == null || distance > discordCandidate.value) {
-                        int actualIndex = (i + startIndex) % capacity;
-                        T metric = timeSeries[actualIndex];
-                        discordCandidate = new DiscordInfo<>(actualIndex, distance, metric);
-                    }
+        final var traversingLength = Math.min(seriesLength - windowSize + 1, matrixProfile.length);
+        for (var i = 0; i < traversingLength; i++) {
+            final var index = (startIndex + i) % capacity;
+            for (var j = 0; j < traversingLength; j++) {
+                final var slidingWindowIndex = (startIndex + j) % capacity;
+                if (index == slidingWindowIndex) {
+                    continue;
                 }
+
+                var distance = calculateDistance(index, slidingWindowIndex);
+                if (matrixProfile[i] > distance) {
+                    matrixProfile[i] = distance;
+                }
+
+                if (discordCandidate == null || distance > discordCandidate.value) {
+                    int actualIndex = (i + startIndex) % capacity;
+                    T metric = timeSeries[newMetricIndex];
+                    discordCandidate = new DiscordInfo<>(actualIndex, distance, metric);
+                }
+
             }
         }
 
-        while (discords.size() > 1 && discords.peekFirst().metric.timestamp() < timeSeries[start].timestamp()) {
+        while (discords.size() > 1 && discords.peekFirst().metric.timestamp() < timeSeries[startIndex].timestamp()) {
             discords.removeFirst();
         }
 
         var lastDiscord = discords.peekLast();
-        if (lastDiscord != null && lastDiscord.value < discordCandidate.value) {
+        if (lastDiscord == null || lastDiscord.metric.value() < discordCandidate.metric.value()) {
             discords.addLast(discordCandidate);
         }
     }
@@ -123,8 +129,11 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
     private double calculateDistance(int startIndex1, int startIndex2) {
         var distance = 0.0;
         for (var k = 0; k < windowSize; k++) {
-            var diff = timeSeries[(startIndex1 + k) % capacity].value() -
-                    timeSeries[(startIndex2 + k) % capacity].value();
+            final var index1 = (startIndex1 + k) % capacity;
+            final var index2 = (startIndex2 + k) % capacity;
+            final var diff = index1 < seriesLength && index2 < seriesLength
+                    ? timeSeries[index1].value() - timeSeries[index2].value()
+                    : 0;
             distance += diff * diff;
         }
         return Math.sqrt(distance);

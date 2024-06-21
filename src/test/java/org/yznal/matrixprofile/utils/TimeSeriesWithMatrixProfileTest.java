@@ -4,16 +4,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.yznal.matrixprofile.vo.MetricValue;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TimeSeriesWithMatrixProfileTest {
+    private static final int CAPACITY = 10;
+    private static final int WINDOW_SIZE = 3;
+
     private TimeSeriesWithMatrixProfile<SimpleMetric> timeSeries;
 
     @BeforeEach
     void setUp() {
-        var capacity = 10;
-        var windowSize = 3;
-        timeSeries = new TimeSeriesWithMatrixProfile<>(capacity, windowSize);
+        timeSeries = new TimeSeriesWithMatrixProfile<>(CAPACITY, WINDOW_SIZE);
     }
 
     @Test
@@ -38,22 +41,19 @@ class TimeSeriesWithMatrixProfileTest {
         }
 
         var matrixProfile = timeSeries.getMatrixProfile();
-        assertEquals(metrics.length - 3 + 1, matrixProfile.length);
-        for (var profileValue : matrixProfile) {
-            assertTrue(profileValue != Double.MAX_VALUE);
-        }
+        assertEquals(metrics.length - WINDOW_SIZE + 1, Arrays.stream(matrixProfile).filter(profileValue -> profileValue != Double.MAX_VALUE).count());
     }
 
     @Test
     void testDiscordDetection() {
         var metrics = new SimpleMetric[]{
-                new SimpleMetric(1.0, 1),
-                new SimpleMetric(1.0, 2),
-                new SimpleMetric(1.0, 3),
+                new SimpleMetric(1.1, 1),
+                new SimpleMetric(1.2, 2),
+                new SimpleMetric(0.9, 3),
                 new SimpleMetric(10.0, 4),
-                new SimpleMetric(1.0, 5),
-                new SimpleMetric(1.0, 6),
-                new SimpleMetric(1.0, 7)
+                new SimpleMetric(1.3, 5),
+                new SimpleMetric(1.11, 6),
+                new SimpleMetric(0.95, 7)
         };
 
         for (var metric : metrics) {
