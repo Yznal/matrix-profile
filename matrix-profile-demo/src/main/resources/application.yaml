@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: matrix-profile-demo
+yznal:
+  matrix:
+    profile:
+      enabled: true
+      metric-ids:
+        - A
+        - B
+      time-series-length: 100
+      window-size: 10

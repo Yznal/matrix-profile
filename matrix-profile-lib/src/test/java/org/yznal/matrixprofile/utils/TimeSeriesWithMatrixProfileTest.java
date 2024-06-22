@@ -51,7 +51,7 @@ class TimeSeriesWithMatrixProfileTest {
                 new SimpleMetric(1.2, 2),
                 new SimpleMetric(0.9, 3),
                 new SimpleMetric(10.0, 4),
-                new SimpleMetric(1.3, 5),
+                new SimpleMetric(1.0, 5),
                 new SimpleMetric(1.11, 6),
                 new SimpleMetric(0.95, 7)
         };
@@ -63,7 +63,7 @@ class TimeSeriesWithMatrixProfileTest {
         var discords = timeSeries.getDiscords();
         assertFalse(discords.isEmpty());
         var discord = discords.getLast();
-        assertEquals(10.0, discord.metric().value());
+        assertEquals(1.0, discord.metric().value());
     }
 
     @Test
@@ -86,9 +86,9 @@ class TimeSeriesWithMatrixProfileTest {
         var metrics = new SimpleMetric[]{
                 new SimpleMetric(1.0, 1),
                 new SimpleMetric(2.0, 2),
-                new SimpleMetric(3.0, 3),
+                new SimpleMetric(5.0, 3),
                 new SimpleMetric(4.0, 4),
-                new SimpleMetric(5.0, 5)
+                new SimpleMetric(0.5, 5)
         };
 
         for (var metric : metrics) {

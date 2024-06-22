@@ -132,7 +132,7 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
         }
 
         var lastDiscord = discords.peekLast();
-        if (lastDiscord == null || lastDiscord.metric.value() < discordCandidate.metric.value()) {
+        if (lastDiscord == null || lastDiscord.value() < discordCandidate.value()) {
             discords.addLast(discordCandidate);
         }
     }

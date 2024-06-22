@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="Demo Data for Visualization" type="SpringBootApplicationConfigurationType"
+                   factoryName="Spring Boot">
+        <output_file path="D:\ITMO\Projects\matrix-profile\matrix-profile-demo-visualization\mp.log" is_save="true"/>
+        <module name="matrix-profile.matrix-profile-demo.main"/>
+        <option name="SPRING_BOOT_MAIN_CLASS" value="org.yznal.matrixprofiledemo.MatrixProfileDemoApplication"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>
