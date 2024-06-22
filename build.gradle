@@ -1,77 +1,23 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.0'
-    id 'io.spring.dependency-management' version '1.1.5'
-    id 'application'
-    id 'java-library'
     id 'maven-publish'
 }
 
-group = 'org.yznal'
-version = '0.0.1-SNAPSHOT'
+allprojects {
+    group = 'org.yznal'
+    version = '0.0.1-SNAPSHOT'
 
-java {
-    sourceCompatibility = '21'
-    withJavadocJar()
-    withSourcesJar()
-}
+    java {
+        sourceCompatibility = '21'
+        compileJava.options.encoding = 'UTF-8'
+        compileTestJava.options.encoding = 'UTF-8'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+        withJavadocJar()
+        withSourcesJar()
     }
-}
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure-processor'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-    implementation 'org.springframework.boot:spring-boot'
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'com.google.guava:guava:33.2.1-jre'
-
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
-tasks.named('jar') {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version)
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-        }
-    }
-}
-
-
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
+    repositories {
+        mavenCentral()
+        mavenLocal()
     }
 }

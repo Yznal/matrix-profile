@@ -1,7 +1,7 @@
-package org.yznal.matrixprofile.configuration;
+package org.yznal.matrixprofile.service;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,19 +9,22 @@ import java.util.List;
 /**
  * Параметры для анализа метрик
  */
-@Data
-@ConfigurationProperties(prefix = "yznal.matrix.profile")
-public class MatrixProfileProperties {
+@Getter
+@Builder
+public final class MetricsServiceProperties {
     /**
      * ID отслеживаемых метрик
      */
+    @Builder.Default
     private List<String> metricIds = Collections.emptyList();
     /**
      * Количество хранимых метрик
      */
+    @Builder.Default
     private int timeSeriesLength = 10;
     /**
      * Размер скользящего окна для анализа
      */
+    @Builder.Default
     private int windowSize = 4;
 }

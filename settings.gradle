@@ -1,1 +1,6 @@
 rootProject.name = 'matrix-profile'
+include 'matrix-profile-lib'
+include 'matrix-profile-autoconfigure'
+include 'matrix-profile-starter'
+include 'matrix-profile-demo'
+

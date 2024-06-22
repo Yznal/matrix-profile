@@ -2,9 +2,9 @@ package org.yznal.matrixprofile.utils;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 import org.yznal.matrixprofile.vo.MetricValue;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -42,7 +42,7 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
      */
     private int seriesLength;
     /**
-     * Индекс элемента временного ряда, который мы считаем самым ранним в нем
+     * Текущий индекс элемента временного ряда, который мы считаем самым ранним в нем
      */
     private int startIndex;
     /**
@@ -93,7 +93,7 @@ public class TimeSeriesWithMatrixProfile<T extends MetricValue> {
                 startIndex = 0;
             }
         } else {
-            seriesLength++; //Иначе увеличим текущее число хранимых метрик
+            seriesLength++; // иначе увеличим текущее число хранимых метрик
         }
 
         if (seriesLength > windowSize) { // Если мы уже храним достаточное количество метрик для анализа,

@@ -1,6 +1,5 @@
 package org.yznal.matrixprofile.service;
 
-import org.yznal.matrixprofile.configuration.MatrixProfileProperties;
 import org.yznal.matrixprofile.utils.TimeSeriesWithMatrixProfile;
 import org.yznal.matrixprofile.vo.Metric;
 
@@ -15,7 +14,7 @@ public class MetricsService {
     private final Map<String, Metric> lastDiscord;
     private final AnomalyReactor anomalyReactor;
 
-    public MetricsService(MatrixProfileProperties matrixProfileProperties,
+    public MetricsService(MetricsServiceProperties matrixProfileProperties,
                           AnomalyReactor anomalyReactor) {
         final var metricIds = matrixProfileProperties.getMetricIds();
         final var timeSeriesLength = matrixProfileProperties.getTimeSeriesLength();
